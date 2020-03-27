@@ -1,35 +1,22 @@
-//servlet - takes care of request and reponse
-
-//require for express framework
 const express = require('express');
-
-//logging package for node js
 const morgan = require('morgan');
-
-//body parser for loading ur values
 const bodyParser = require('body-parser');
 const app = express();
-
+const fileUpload = require('express-fileupload')
 //to assign a foldr to be static in node JS
 //you can enable it using bellow
 //you can now access the folder without request
 //as well the folder is now availabe for everyone
-app.use('/uploads', express.static('uploads'));
+// app.use('/uploads', express.static('uploads'));
 
-/*  connecting to mongo db */
-const con = require('./api/route/connection');
-/** connection to mongo db ends here */
 
-//reister every other routes here 
-//since app is going to be our main route
-
-const productRoutes = require('./api/route/products');
-const ordersRoutes = require('./api/route/orders');
-const usersRoutes = require('./api/route/users');
 //se morgan to loggin requests
+app.use(fileUpload({useTempFiles:true}))
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
+
+const con = require('./api/route/connection');
 
 //enable cors
 app.use((req,res,next)=>{
@@ -43,10 +30,22 @@ app.use((req,res,next)=>{
     next();
 });
 
-app.use('/products',productRoutes);
-app.use('/orders',ordersRoutes);
+// app.use('/products',productRoutes);
+const channelListRoutes = require('./api/route/channelList');
+app.use('/channels',channelListRoutes);
+
+const usersRoutes = require('./api/route/usersInformation');
 app.use('/users',usersRoutes);
 
+const channelUsersRoutes = require('./api/route/channelUsers');
+app.use('/channelUsers',channelUsersRoutes);
+
+const channelMessageRoutes = require('./api/route/channelMessage');
+app.use('/message',channelMessageRoutes);
+
+
+const channelMesageConversationRoutes = require('./api/route/channelMessageConversation');
+app.use('/messageConversation',channelMesageConversationRoutes);
 
 //handle errors - thats invalid request 
 //reason you have it after all the middleware above
@@ -66,15 +65,5 @@ app.use((error, req,res,next)=>{
         }
     });
 });
-//req - httprequest res - httpresponse next - move controller to the next requysest
-//response status 200 - ok 400 - badd
 
-/*app.use((req,res, next)=> {
-    res.status(200).json({
-            message: 'It Works!! '
-    });
-});*/
-
-
-//export the servlet to the server
 module.exports = app;
