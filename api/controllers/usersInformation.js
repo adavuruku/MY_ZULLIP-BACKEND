@@ -150,7 +150,7 @@ exports.users_update_information = (req,res,next)=>{
             res.status(200).json({
                 message:"success",
                 user:result
-        });
+            });
         }).catch(err=>{
             res.status(500).json({
                 message:"faill",
@@ -164,3 +164,54 @@ exports.users_update_information = (req,res,next)=>{
 }
 
 
+//update user profile image
+exports.users_update_profileImage_information = (req,res,next)=>{
+    var id = req.userData.userId;
+    Users.find({_id:id}).exec()
+    .then(doc=>{
+        if(doc){
+            let profileImage = doc[0].profileImage
+            if(req.files){
+                cloudinary.uploader.upload(req.files.profileImage.tempFilePath,{ folder: "myzullip/", 
+                public_id: id },(err,result)=>{
+                    if(result){
+                        console.log(result)
+                        profileImage = result.secure_url;
+                        Users.findOneAndUpdate({_id:id},
+                        {$set:{profileImage:profileImage}}).exec()
+                        .then(result=> {
+                            res.status(200).json({
+                                message:"success",
+                                user:result
+                            });
+                        }).catch(err=>{
+                            res.status(500).json({
+                                message:"faill",
+                                error:err
+                            });
+                        });
+                    }
+                })
+            }
+        }
+    }).catch(err=>{
+        res.status(500).json({error:err});
+    });
+    
+}
+
+//update user
+exports.get_a_user_information = (req,res,next)=>{
+    let id = req.params.userid;
+    Users.find({_id:id}).exec()
+    .then(doc=>{
+        res.status(200).json({
+            message:"success",
+            user:doc
+        });
+    }).catch(err=>{
+        res.status(500).json({error:err});
+    })
+        
+    
+}
