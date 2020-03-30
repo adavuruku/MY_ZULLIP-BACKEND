@@ -9,12 +9,12 @@ const fileUpload = require('express-fileupload')
 //as well the folder is now availabe for everyone
 // app.use('/uploads', express.static('uploads'));
 
-
-//se morgan to loggin requests
 app.use(fileUpload({useTempFiles:true}))
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
+
+require('dotenv').config();
 
 const con = require('./api/route/connection');
 
