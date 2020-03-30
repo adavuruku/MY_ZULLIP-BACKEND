@@ -24,32 +24,34 @@ exports.users_add_message = (req,res,next)=>{
 
 exports.users_view_channel_message = (req,res,next)=>{
     const channelid = req.params.channelid
+    console.log(channelid)
     ChannelsMessage.find({channelInfo:channelid}).sort('-createdAt')
     .populate('userInformation','fullName')
     .populate('channelInfo')
     .exec()
     .then(message=>{
-        const response={
-            count: message.length,
-            channelId: message[0].channelInfo._id,
-            channelName: message[0].channelInfo.channelName,
-            allMessage: message.map(channel=>{
-                return {
-                    messageId: channel._id,
-                    messageContent: channel.messageContent,
-                    isThread: channel.channelMessageConversation,
-                    channelMessageReaction: channel.channelMessageReaction,
-                    postedBy: channel.userInformation.fullName,
-                    createdAt:channel.createdAt
-                }
-            })
-        };
-        if(message){
+        if(message.length > 0){
+            const response={
+                count: message.length,
+                channelId: message[0].channelInfo._id,
+                channelName: message[0].channelInfo.channelName,
+                allMessage: message.map(channel=>{
+                    return {
+                        messageId: channel._id,
+                        messageContent: channel.messageContent,
+                        isThread: channel.channelMessageConversation,
+                        channelMessageReaction: channel.channelMessageReaction,
+                        postedBy: channel.userInformation.fullName,
+                        createdAt:channel.createdAt
+                    }
+                })
+            };
             res.status(200).json(response);
         }else{
             res.status(200).json({message: 'No Message'});
         }
     }).catch(err=> {
+        console.log(err)
         res.status(500).json({error:err});
     });
 }     

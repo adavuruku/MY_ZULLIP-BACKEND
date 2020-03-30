@@ -17,6 +17,8 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 //enable cors
 
+
+
 const con = require('./api/route/connection');
 
 //enable cors
@@ -32,10 +34,33 @@ const con = require('./api/route/connection');
 // });
 
 
+// const socket = require('./websocket');
 
-app.get('/server',(res,req)=>{
+app.get('/realcomm/:channelid',(res,req)=>{
+    //console.log(socket);
+    console.log(req.params.channelid)
+    // const websocket = require('./websocket');
+    // let wss = websocket.createWesocket()
+    // wss.on('connection', (ws)=> {
+    //     ws.on('message', (message) =>{
+    //         console.log('received: %s', message);
+    //         wss.clients.forEach(users => {
+    //            if (req.params.channelid == "1234"){
+    //                console.log(req.params.channelid)
+    //                 users.send(message)
+    //             }
+    //         });
+    //         // ws.send(message);
+    //     });
     
+    //     ws.on('close',()=>{
+    //         console.log("client out");
+    //     }) 
+    //     console.log("client connected");
+    // });
 });
+
+
 const channelListRoutes = require('./api/route/channelList');
 app.use('/channels',channelListRoutes);
 
