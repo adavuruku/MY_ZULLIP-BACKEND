@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="eng">
+   <head>
+        <meta charswet="UTF-8">
+        <title>Websocket</title>
+   </head>
+   <body>
+       <input type="text" placeholder="Your message Here" id="text"/>
+        <button>Send Hello</button>
+       <script>
+           var sock = new WebSocket("ws://127.0.0.1:3000/server");
+           sock.onopen = function(event){
+            //    alert("Socket Connected");
+               setTimeout(function(){
+                    sock.send("Hey There");
+                }, 1000);
+           };
+           
+           sock.onmessage = function (event){
+               console.log(event);
+           }
+
+           document.querySelector('button').onclick = ()=>{
+               var text = document.getElementById('text').value;
+               sock.send(text);
+           }
+       </script>
+
+      
+   </body> 
+</html>

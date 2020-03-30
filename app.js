@@ -2,6 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const app = express();
+var cors = require('cors')
 const fileUpload = require('express-fileupload')
 //to assign a foldr to be static in node JS
 //you can enable it using bellow
@@ -13,23 +14,37 @@ app.use(fileUpload({useTempFiles:true}))
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
-
-require('dotenv').config();
+//enable cors
+app.use(cors());
 
 const con = require('./api/route/connection');
 
 //enable cors
-app.use((req,res,next)=>{
-    res.header("Access-Control-Allow-Origin","*");
-    res.header("Access-Control-Allow-Origin",
-    "Origin, X-Requested-With, Contenet-Type, Accept, Authorization");
-    if(req.method == 'OPTIONS'){
-        res.header('Access-Control-Allow-Origin','PUT, PATCH, POST, DELETE, GET');
-        res.status(200).json({});
-    }
-    next();
-});
+// app.use((req,res,next)=>{
+//     res.header("Access-Control-Allow-Origin","*");
+//     res.header("Access-Control-Allow-Origin",
+//     "Origin, X-Requested-With, Contenet-Type, Accept, Authorization");
+//     if(req.method == 'OPTIONS'){
+//         res.header('Access-Control-Allow-Origin','PUT, PATCH, POST, DELETE, GET');
+//         res.status(200).json({});
+//     }
+//     next();
+// });
 
+
+var server = require('ws').Server;
+var s = new server({port:5001});
+
+
+
+
+app.get('/server',(req,res)=>{
+    s.on('connection', (ws)=>{
+        ws.on('message', (message)=>{
+            console.log("Received: "+ message);
+        })
+    })
+});
 // app.use('/products',productRoutes);
 const channelListRoutes = require('./api/route/channelList');
 app.use('/channels',channelListRoutes);
