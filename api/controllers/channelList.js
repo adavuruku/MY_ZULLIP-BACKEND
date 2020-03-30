@@ -13,7 +13,8 @@ exports.create_new_channel = (req,res,next)=>{
                 _id : mongoose.Types.ObjectId(),
                 userInformation :req.userData.userId,
                 channelName : req.body.channelName,
-                channelDescription : req.body.channelDescription
+                channelDescription : req.body.channelDescription, 
+                channelPrivate : req.body.channelPrivate 
             });
             chan.save()
             .then(doc=>{

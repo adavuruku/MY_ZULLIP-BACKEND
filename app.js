@@ -32,20 +32,10 @@ const con = require('./api/route/connection');
 // });
 
 
-var server = require('ws').Server;
-var s = new server({port:5001});
 
-
-
-
-app.get('/server',(req,res)=>{
-    s.on('connection', (ws)=>{
-        ws.on('message', (message)=>{
-            console.log("Received: "+ message);
-        })
-    })
+app.get('/server',(res,req)=>{
+    
 });
-// app.use('/products',productRoutes);
 const channelListRoutes = require('./api/route/channelList');
 app.use('/channels',channelListRoutes);
 

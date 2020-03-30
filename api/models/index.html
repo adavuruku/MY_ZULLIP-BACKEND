@@ -8,11 +8,11 @@
        <input type="text" placeholder="Your message Here" id="text"/>
         <button>Send Hello</button>
        <script>
-           var sock = new WebSocket("ws://127.0.0.1:3000/server");
+           var sock = new WebSocket("ws://127.0.0.1:3000");
            sock.onopen = function(event){
             //    alert("Socket Connected");
                setTimeout(function(){
-                    sock.send("Hey There");
+                    sock.send("Sherif");
                 }, 1000);
            }
            
