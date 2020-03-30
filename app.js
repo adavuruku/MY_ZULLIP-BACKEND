@@ -9,13 +9,13 @@ const fileUpload = require('express-fileupload')
 //you can now access the folder without request
 //as well the folder is now availabe for everyone
 // app.use('/uploads', express.static('uploads'));
+app.use(cors());
 
 app.use(fileUpload({useTempFiles:true}))
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 //enable cors
-app.use(cors());
 
 const con = require('./api/route/connection');
 
