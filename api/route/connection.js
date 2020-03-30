@@ -3,7 +3,7 @@ require('dotenv').config();
 // Configuring the database
 
 var devState = process.env.NODE_ENV
-let conUrl =( devState == 'production') ? process.env.MONGO_LOCAL_CON : process.env.MONGO_LIVE_CON
+let conUrl =( devState == 'production') ? process.env.MONGO_LIVE_CON : process.env.MONGO_LOCAL_CON
 const dbConfig = module.exports = {
     // url: 'mongodb://localhost:27017/myzullip'
     url: conUrl
