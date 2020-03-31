@@ -41,7 +41,7 @@ exports.users_view_channel_message = (req,res,next)=>{
                         messageId: channel._id,
                         messageContent: channel.messageContent,
                         isThread: channel.channelMessageConversation,
-                        // channelMessageReaction: channel.channelMessageReaction,
+                        channelMessageReaction: channel.channelMessageReaction,
                         postedBy: channel.userInformation.fullName,
                         createdAt:channel.createdAt
                     }
@@ -58,50 +58,50 @@ exports.users_view_channel_message = (req,res,next)=>{
 }     
 
 
-// // add reactions to channel message
-// exports.channel_add_reaction_to_channel_message = (req,res,next)=>{
-//     const messageid = req.params.messageid
-//     console.log(messageid);
-//     ChannelsMessage.findOneAndUpdate({_id:messageid},
-//         {
-//             $addToSet:{
-//                 channelMessageReaction:{
-//                     reactionContent:req.body.reactionContent,
-//                     userInformation:req.userData.userId
-//                 }
-//             }
-//         }).exec()
-//     .then(result=> {
-//         res.status(200).json({
-//             message:"success",
-//             user:result
-//         });
-//     })
-// }
+// add reactions to channel message
+exports.channel_add_reaction_to_channel_message = (req,res,next)=>{
+    const messageid = req.params.messageid
+    console.log(messageid);
+    ChannelsMessage.findOneAndUpdate({_id:messageid},
+        {
+            $addToSet:{
+                channelMessageReaction:{
+                    reactionContent:req.body.reactionContent,
+                    userInformation:req.userData.userId
+                }
+            }
+        }).exec()
+    .then(result=> {
+        res.status(200).json({
+            message:"success",
+            user:result
+        });
+    })
+}
 
 // add reactions to channel message
 
-exports.channel_add_reaction_to_channel_message = (req,res,next)=>{
-    const messageid = req.params.messageid
-    const messageReaction = new ChannelMessageReaction({
-        _id : mongoose.Types.ObjectId(),
-        reactionContent :req.body.reactionContent,
-        userInformation : req.userData.userId,
-        channelMessage : messageid
-    });
-    messageReaction.save()
-    .then(doc=>{
-        res.status(201).json({
-            message:'created',
-            message:doc
-        });
-    }).catch(err=>{
-        res.status(500).json({
-            message: 'faill',
-            Error: err
-        });
-    }); 
-}
+// exports.channel_add_reaction_to_channel_message = (req,res,next)=>{
+//     const messageid = req.params.messageid
+//     const messageReaction = new ChannelMessageReaction({
+//         _id : mongoose.Types.ObjectId(),
+//         reactionContent :req.body.reactionContent,
+//         userInformation : req.userData.userId,
+//         channelMessage : messageid
+//     });
+//     messageReaction.save()
+//     .then(doc=>{
+//         res.status(201).json({
+//             message:'created',
+//             message:doc
+//         });
+//     }).catch(err=>{
+//         res.status(500).json({
+//             message: 'faill',
+//             Error: err
+//         });
+//     }); 
+// }
 
 exports.channel_message_to_conversation = (req,res,next)=>{
     const messageid = req.params.messageid
