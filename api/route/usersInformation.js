@@ -14,6 +14,8 @@ router.post('/signup',UsersControllers.users_create_signup);
 router.get('/:userid',checkAuth,UsersControllers.get_a_user_information);
 router.patch('/updatepics',checkAuth,UsersControllers.users_update_profileImage_information);
 
+router.get('/search/:username',checkAuth,UsersControllers.get_a_list_of_users_information);
+
 // router.post('/pics',UsersControllers.fileLoad);
 //remove a user
 // router.delete('/:email',checkAuth, UsersControllers.users_delete_usre);

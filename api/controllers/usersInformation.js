@@ -199,7 +199,19 @@ exports.users_update_profileImage_information = (req,res,next)=>{
     });
     
 }
-
+// 
+exports.get_a_list_of_users_information = (req,res,next)=>{
+    let username = req.params.username;
+    Users.find({fullName:{ $regex: username, $options: 'i'}}).exec()
+    .then(doc=>{
+        res.status(200).json({
+            message:"success",
+            user:doc
+        });
+    }).catch(err=>{
+        res.status(500).json({error:err});
+    })
+}
 //update user
 exports.get_a_user_information = (req,res,next)=>{
     let id = req.params.userid;
@@ -212,6 +224,4 @@ exports.get_a_user_information = (req,res,next)=>{
     }).catch(err=>{
         res.status(500).json({error:err});
     })
-        
-    
 }

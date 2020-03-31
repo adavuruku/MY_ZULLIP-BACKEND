@@ -76,7 +76,10 @@ exports.channel_add_reaction_to_channel_message = (req,res,next)=>{
             message:"success",
             user:result
         });
-    })
+    }).catch(err=> {
+        console.log(err)
+        res.status(500).json({error:err});
+    });
 }
 
 // add reactions to channel message

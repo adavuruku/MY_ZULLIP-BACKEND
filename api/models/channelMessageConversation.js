@@ -2,8 +2,8 @@ let timestampPlugin = require('./plugins/timestamp')
 const mongoose = require('mongoose');
 
 const conversationMessageReaction = mongoose.Schema({
-    userInformation:{type:String, required:true},
-    reactionContent: {type:String,trim:true, required:true}
+    userInformation:{type:String},
+    reactionContent: {type:String,trim:true}
 });
 
 conversationMessageReaction.plugin(timestampPlugin)
