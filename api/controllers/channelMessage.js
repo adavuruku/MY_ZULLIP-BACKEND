@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const ChannelsMessage = require('../models/channelMessage');
-const ChannelsMessageReaction = require('../models/ChannelsMessageReaction');
+const ChannelMessageReaction = require('../models/ChannelMessageReaction');
 exports.users_add_message = (req,res,next)=>{
     const message = new ChannelsMessage({
         _id : mongoose.Types.ObjectId(),
@@ -82,7 +82,7 @@ exports.users_view_channel_message = (req,res,next)=>{
 
 exports.channel_add_reaction_to_channel_message = (req,res,next)=>{
     const messageid = req.params.messageid
-    const messageReaction = new ChannelsMessageReaction({
+    const messageReaction = new ChannelMessageReaction({
         _id : mongoose.Types.ObjectId(),
         reactionContent :req.body.reactionContent,
         userInformation : req.userData.userId,
