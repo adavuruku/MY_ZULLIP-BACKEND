@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const ChannelsMessage = require('../models/channelMessage');
-const ChannelMessageReaction = require('../models/ChannelMessageReaction');
+const ChannelMessageReaction = require('../models/channelMessageReaction');
+
 exports.users_add_message = (req,res,next)=>{
     const message = new ChannelsMessage({
         _id : mongoose.Types.ObjectId(),
