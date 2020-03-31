@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 
 
 const channelMessageReaction = mongoose.Schema({
-    userInformation:{type:String, unique:true, required:true},
-    reactionContent: {type:String,trim:true, required:true}
+    userInformation:{type:String},
+    reactionContent: {type:String,trim:true}
 });
 
 channelMessageReaction.plugin(timestampPlugin)

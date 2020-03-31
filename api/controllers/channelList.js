@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Channels = require('../models/channelList');
+const websocket = require('../../websocket');
 //create channel
 exports.create_new_channel = (req,res,next)=>{
     Channels.find({channelName:req.body.channelName}).exec()
@@ -32,7 +33,30 @@ exports.create_new_channel = (req,res,next)=>{
     });
 }
 
-
+exports.testing_channel = (req,res,next)=>{
+    console.log(req.params.channelid)
+    
+    let wss = websocket.createWesocket()
+    wss.on('connection', (ws, request, client)=> {
+        ws.on('message', (message) =>{
+            console.log('received: %s', message);
+            wss.clients.forEach(users => {
+              // if (req.params.channelid == "1234"){
+                   console.log(users)
+                    users.send(message)
+              //  }else{
+              //      console.log("none")
+              //  }
+            });
+            // ws.send(message);
+        });
+    
+        ws.on('close',()=>{
+            console.log("client out");
+        }) 
+        console.log("client connected");
+    });
+}
 //retrieve a channel
 exports.find_channel = (req,res,next)=>{
     const id = req.params.channelid
