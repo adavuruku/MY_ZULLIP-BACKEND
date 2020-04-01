@@ -133,12 +133,14 @@ app.get('/messageChannel',(req,res)=>{
     // console.log(req.query.user)
     let id = req.query.messageid;
     let channelid = req.query.channelid;
+    console.log(channelid);
     ChannelsMessage.findById(id)
     .populate('userInformation')
     .exec()
     .then(chan=>{
         let channel = {
             messageContent:chan.messageContent,
+            channelInfo:channelid,
             postedBy:{
                 fullName:chan.userInformation.fullName,
                 profileImage:chan.userInformation.profileImage,
@@ -159,7 +161,13 @@ app.get('/addUserToChannel',(req,res)=>{
     let channelid = req.query.channelid;
     ChannelsUsers.find({channelInfo:channelid})
     .populate('userInformation')
-    .populate('channelInfo')
+    .populate({
+        path:'channelInfo',
+        populate: {
+            path: 'userInformation',
+            model: 'UserInformation'
+          } 
+    })
     .exec()
     .then(channelUser=>{
         if(channelUser.length > 0){
@@ -169,6 +177,7 @@ app.get('/addUserToChannel',(req,res)=>{
                 channelName:channelUser[0].channelInfo.channelName,
                 channelDescription:channelUser[0].channelInfo.channelDescription,
                 createdAt:channelUser[0].channelInfo.createdAt,
+                createdBy:channelUser[0].channelInfo.userInformation.fullName,
                 allChannelUsers: channelUser.map(channel=>{
                     return {
                         userId:channel.userInformation._id,
@@ -185,7 +194,7 @@ app.get('/addUserToChannel',(req,res)=>{
                 addedUser.push(chanUser.userInformation._id)
             })
             socketVal = {
-                createdBy:channelUser[0].userInformation.fullName,
+                createdBy:channelUser[0].channelInfo.userInformation.fullName,
                 channelid:channelUser[0].channelInfo._id,
                 channelName:channelUser[0].channelInfo.channelName,
                 channelDescription:channelUser[0].channelInfo.channelDescription,

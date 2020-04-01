@@ -33,27 +33,23 @@
             log.innerHTML += '<br>' + msg +'<br>'
         })
 
-//         "5e7b79e1a2ebf72008c1346e"
-// 1: "5e7ca6c55128d453306c128d"
-// 2: "5e7ca68e5128d453306c128c"
-
-
         let existingChannel = ['5e843fe836c1beb16cda470a','5e843f5dab8e78ac045b3744']
 
         //user just get added to a channel
         socket.on('addedToChannel', data=>{
-            console.log(existingChannel,'prev')
             if(data.addedUsers.indexOf(userId) !==-1){
-                console.log("he dey");
+                console.log('he dey')
                 if(existingChannel.indexOf(data.channelid) === -1){
-                    socket.on(data.channelid, data=>{
-                        console.log(data);
-                        log.innerHTML += data +'<br>'
+                    console.log('channel no dey')
+                    socket.on(data.channelid, content=>{
+                        console.log(content);
+                        log.innerHTML += content +'<br>'
                     })
                     existingChannel.push(data.channelid);
+                    let msg =   `#${data.channelName} <br> ${data.createdBy} created this channel on ${data.createdAt}. This is the very begining of the #${data.channelName} channel. Description : ${data.channelDescription}`
+                    log.innerHTML += msg +'<br>'
                 }
             }
-            console.log(existingChannel,'now')
         })
         //create listener for all the existing channel user has
         //been added to
@@ -67,6 +63,9 @@
             })
         }
         loadAllUsersChannel();
+
+
+
        </script>
 
       

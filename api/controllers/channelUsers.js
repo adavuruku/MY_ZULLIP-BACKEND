@@ -44,7 +44,13 @@ exports.list_all_channel_Users = (req,res,next)=>{
     const channelInfo = req.params.channelid
     ChannelsUsers.find({channelInfo:channelInfo})
     .populate('userInformation')
-    .populate('channelInfo')
+    .populate({
+        path:'channelInfo',
+        populate: {
+            path: 'userInformation',
+            model: 'UserInformation'
+          } 
+    })
     .exec()
     .then(channelUser=>{
         if(channelUser.length > 0){
@@ -53,6 +59,7 @@ exports.list_all_channel_Users = (req,res,next)=>{
                 channelName:channelUser[0].channelInfo.channelName,
                 channelDescription:channelUser[0].channelInfo.channelDescription,
                 createdAt:channelUser[0].channelInfo.createdAt,
+                createdBy:channelUser[0].channelInfo.userInformation.fullName,
                 allChannelUsers: channelUser.map(channel=>{
                     return {
                         userId:channel.userInformation._id,
