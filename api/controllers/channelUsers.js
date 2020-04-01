@@ -75,26 +75,7 @@ exports.list_all_channel_Users = (req,res,next)=>{
 
 exports.get_all_user_channel = (req,res,next)=>{
     const userId = req.userData.userId
-    ChannelsUsers.find({userInformation:userId})
-    .populate('channelInfo').exec()
-    .then(channel=>{
-        if(channel.length > 0){
-            const response={
-                count: channel.length,
-                allChannels: channel.map(chan=>{
-                    return {
-                        channelId: chan.channelInfo._id,
-                        channelName: chan.channelInfo.channelName
-                    }
-                })
-            };
-            res.status(200).json(response);
-        }else{
-            res.status(200).json({message: 'No Channels Yet'});
-        }
-    }).catch(err=> {
-        res.status(500).json({error:err});
-    });
+    res.status(200).json({userId:userId});
 }
 
 //remove yourself from channels
