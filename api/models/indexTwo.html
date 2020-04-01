@@ -14,19 +14,10 @@
         </div>
         <script src="http://127.0.0.1:3000/socket.io/socket.io.js"></script>
        <script>
-
         const socket = io('http://127.0.0.1:3000');
         // const socket = io();
         var log = document.getElementById('log');
-
-        //listener user created a channel
-        socket.on('5e7b79e1a2ebf72008c1346e', data=>{
-            console.log(JSON.stringify(data));
-           let msg =   `#${data.channelName} You created this channel on ${data.createdAt}. This is the very begining of the #${data.channelName} channel. Description : ${data.channelDescription}`
-            log.innerHTML += '<br>' + msg +'<br>'
-        })
-
-        socket.on('addedToChannel', data=>{
+        socket.on('chat-message', data=>{
             console.log(data);
             log.innerHTML += data +'<br>'
         })
@@ -35,17 +26,7 @@
             var text = document.getElementById('text').value;
             socket.emit('chat-message',text);
         }
-        let g = ['sherif', 'abbas']
-        function loadAllUsersChannel(){
-            g.forEach(el=>{
-                socket.on(el, data=>{
-                    console.log(data);
-                    log.innerHTML += data +'<br>'
-                })
-                // console.log(el);
-            })
-        }
-        loadAllUsersChannel();
+
        </script>
 
       

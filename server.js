@@ -15,26 +15,24 @@ const port = process.env.PORT || 3000;
 //create the server
 const server = http.createServer(app);
 
-// const WebSocket = require('ws');
-// const wss = new WebSocket.Server({ server });
-// wss.on('connection', (ws)=> {
-//     ws.on('message', (message) =>{
-//         console.log('received: %s', message);
-//         wss.clients.forEach(users => {
-//             users.send(message)
-//         });
-//         // ws.send(message);
-//     });
- 
-//     ws.on('close',()=>{
-//         console.log("client out");
-//     }) 
-//     console.log("client connexted");
-// });
+
+const socketIO =require('socket.io')(server);
+
+socketIO.on('connection', (ws)=> {
+    console.log("connected");
+    ws.on('chat-message', (message) =>{
+        console.log('received: %s c m', message);
+        socketIO.emit('chat-message', message)
+    });
+    ws.on('send-chat-message', (message) =>{
+        console.log('received s m : %s', message);
+        socketIO.emit('send-chat-message', message)
+    });
+});
 
 server.listen(port);
 
 
-let getServer = () => server
+ let getSocket = () => socketIO
 
-exports.getServer = getServer;
+exports.getSocket = getSocket;

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const ChannelsMessage = require('../models/channelMessage');
 const ChannelMessageReaction = require('../models/channelMessageReaction');
-
+const url = require('url')
 exports.users_add_message = (req,res,next)=>{
     const message = new ChannelsMessage({
         _id : mongoose.Types.ObjectId(),
@@ -11,10 +11,17 @@ exports.users_add_message = (req,res,next)=>{
     });
     message.save()
     .then(doc=>{
-        res.status(201).json({
-            message:'created',
-            message:doc
-        });
+        // res.status(201).json({
+        //     message:'created',
+        //     message:doc
+        // });
+        res.redirect(url.format({
+            pathname:'/messageChannel',
+            query:{
+                channelid:doc.channelInfo.toString(),
+                messageid:doc._id.toString()
+            }
+        }))
     }).catch(err=>{
         res.status(500).json({
             message: 'faill',

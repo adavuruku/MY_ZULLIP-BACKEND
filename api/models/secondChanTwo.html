@@ -7,7 +7,6 @@
    <body>
         <script src="http://127.0.0.1:3000/socket.io/socket.io.js"></script>
        <input type="text" placeholder="Your message Here" id="text"/>
-
         <button>Send Hello</button>
         <div id='log'>
 
@@ -26,6 +25,8 @@
             socket.emit('send-chat-message',text);
         }
 
+
+        
        </script>
 
       

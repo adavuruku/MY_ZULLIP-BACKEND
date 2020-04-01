@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 const Channels = require('../models/channelList');
 const websocket = require('../../websocket');
+const url = require('url')
+const ChannelsUsers = require('../models/channelUsers');
+
+
 //create channel
 exports.create_new_channel = (req,res,next)=>{
     Channels.find({channelName:req.body.channelName}).exec()
@@ -13,16 +17,37 @@ exports.create_new_channel = (req,res,next)=>{
             const chan = new Channels({
                 _id : mongoose.Types.ObjectId(),
                 userInformation :req.userData.userId,
-                channelName : req.body.channelName,
-                channelDescription : req.body.channelDescription, 
-                channelPrivate : req.body.channelPrivate 
+                channelName : req.body.channelName.trim(),
+                channelDescription : req.body.channelDescription.trim(), 
+                channelPrivate : req.body.channelPrivate.trim() 
             });
             chan.save()
             .then(doc=>{
-                res.status(201).json({
-                    message:'Channel Created !!',
-                    user:doc
+                // res.status(201).json({
+                //     message:'Channel Created !!',
+                //     user:doc
+                // });
+                // console.log(doc.createdAt);
+                //add him as a user of the channel
+                const chanUser = new ChannelsUsers({
+                    _id : mongoose.Types.ObjectId(),
+                    userInformation :req.userData.userId,
+                    channelInfo : doc._id
                 });
+                chanUser.save()
+                .then(docnew=>{
+                    res.redirect(url.format({
+                        pathname:'/createChannel',
+                        query:{
+                            channelid:doc._id.toString()
+                        }
+                    }))
+                }).catch(err=>{
+                    res.status(500).json({
+                        message: 'faill',
+                        Error: err
+                    });
+                }); 
             }).catch(err=>{
                 res.status(500).json({
                     message: 'faill',
@@ -33,30 +58,6 @@ exports.create_new_channel = (req,res,next)=>{
     });
 }
 
-exports.testing_channel = (req,res,next)=>{
-    console.log(req.params.channelid)
-    
-    let wss = websocket.createWesocket()
-    wss.on('connection', (ws, request, client)=> {
-        ws.on('message', (message) =>{
-            console.log('received: %s', message);
-            wss.clients.forEach(users => {
-              // if (req.params.channelid == "1234"){
-                   console.log(users)
-                    users.send(message)
-              //  }else{
-              //      console.log("none")
-              //  }
-            });
-            // ws.send(message);
-        });
-    
-        ws.on('close',()=>{
-            console.log("client out");
-        }) 
-        console.log("client connected");
-    });
-}
 //retrieve a channel
 exports.find_channel = (req,res,next)=>{
     const id = req.params.channelid
@@ -92,24 +93,25 @@ exports.list_all_channel = (req,res,next)=>{
     .populate('userInformation','fullName')
     .exec()
     .then(channel=>{
-        const response={
-            count: channel.length,
-            allChannels: channel.map(channel=>{
-                return {
-                    channelId: channel._id,
-                    channelName: channel.channelName,
-                    channelDescription: channel.channelDescription,
-                    channelPrivate:channel.channelPrivate,
-                    createdBy:channel.userInformation.fullName,
-                    createdAt:channel.createdAt,
-                    request :{
-                        type:"GET",
-                        url:"http://localhost:3000/channels/"+channel._id
+        if( channel.length > 0){
+            const response={
+                count: channel.length,
+                allChannels: channel.map(channel=>{
+                    return {
+                        channelId: channel._id,
+                        channelName: channel.channelName,
+                        channelDescription: channel.channelDescription,
+                        channelPrivate:channel.channelPrivate,
+                        createdBy:channel.userInformation.fullName,
+                        createdAt:channel.createdAt,
+                        request :{
+                            type:"GET",
+                            url:"http://localhost:3000/channels/"+channel._id
+                        }
                     }
-                }
-            })
-        };
-        if(channel){
+                })
+            };
+        
             res.status(200).json(response);
         }else{
             res.status(200).json({message: 'No Channels Yet'});
@@ -120,31 +122,32 @@ exports.list_all_channel = (req,res,next)=>{
 }
 
 
-//retrieve a channel
+//retrieve all channel created by a user
 exports.find_all_user_channel = (req,res,next)=>{
     const userId = req.params.userid
     Channels.find({userInformation:userId}).sort('-createdAt')
     .populate('userInformation','fullName')
     .exec()
     .then(channel=>{
-        const response={
-            count: channel.length,
-            allChannels: channel.map(channel=>{
-                return {
-                    channelId: channel._id,
-                    channelName: channel.channelName,
-                    channelDescription: channel.channelDescription,
-                    channelPrivate:channel.channelPrivate,
-                    createdBy:channel.userInformation.fullName,
-                    createdAt:channel.createdAt,
-                    request :{
-                        type:"GET",
-                        url:"http://localhost:3000/channels/"+channel._id
+        if( channel.length>0){
+            const response={
+                count: channel.length,
+                allChannels: channel.map(channel=>{
+                    return {
+                        channelId: channel._id,
+                        channelName: channel.channelName,
+                        channelDescription: channel.channelDescription,
+                        channelPrivate:channel.channelPrivate,
+                        createdBy:channel.userInformation.fullName,
+                        createdAt:channel.createdAt,
+                        request :{
+                            type:"GET",
+                            url:"http://localhost:3000/channels/"+channel._id
+                        }
                     }
-                }
-            })
-        };
-        if(channel){
+                })
+            };
+       
             res.status(200).json(response);
         }else{
             res.status(200).json({message: 'No Channels Yet'});

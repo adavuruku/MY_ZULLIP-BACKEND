@@ -2,6 +2,10 @@ const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const app = express();
+
+
+
+
 var cors = require('cors')
 const fileUpload = require('express-fileupload')
 //to assign a foldr to be static in node JS
@@ -18,7 +22,24 @@ app.use(bodyParser.json());
 //enable cors
 
 
+// const s = require('./server');
 
+// app.get('/runtime',(res,req)=>{
+//     socketIO = s.getSocket()
+//     console.log(socketIO)
+//     socketIO.on('connection', (ws)=> {
+//         console.log("connected");
+//         ws.on('chat-message', (message) =>{
+//             console.log('received: %s c m', message);
+//             socketIO.emit('chat-message', message)
+//         });
+//         ws.on('send-chat-message', (message) =>{
+//             console.log('received s m : %s', message);
+//             socketIO.emit('send-chat-message', message)
+//         });
+//     });
+// })
+// let server = () =>  s.getServer(
 const con = require('./api/route/connection');
 
 //enable cors
@@ -35,31 +56,126 @@ const con = require('./api/route/connection');
 
 
 // const socket = require('./websocket');
-
-app.get('/realcomm/:channelid',(res,req)=>{
-    //console.log(socket);
-    console.log(req.params.channelid)
-    // const websocket = require('./websocket');
-    // let wss = websocket.createWesocket()
-    // wss.on('connection', (ws)=> {
-    //     ws.on('message', (message) =>{
-    //         console.log('received: %s', message);
-    //         wss.clients.forEach(users => {
-    //            if (req.params.channelid == "1234"){
-    //                console.log(req.params.channelid)
-    //                 users.send(message)
-    //             }
-    //         });
-    //         // ws.send(message);
-    //     });
+// app.get('/realcomm/:channelid',(res,req)=>{
+//     //console.log(socket);
+//     console.log(req.params.channelid)
+//     const websocket = require('./websocket');
+//     let wss = websocket.createWesocket()
+//     wss.on('connection', (ws)=> {
+//         ws.on('message', (message) =>{
+//             console.log('received: %s', message);
+//             wss.clients.forEach(users => {
+//                if (req.params.channelid == "1234"){
+//                    console.log(req.params.channelid)
+//                     users.send(message)
+//                 }
+//             });
+//             // ws.send(message);
+//         });
     
-    //     ws.on('close',()=>{
-    //         console.log("client out");
-    //     }) 
-    //     console.log("client connected");
+//         ws.on('close',()=>{
+//             console.log("client out");
+//         }) 
+//         console.log("client connected");
+//     });
+
+// });
+
+//create the server - and the listening socket
+const port = process.env.PORT || 3000;
+
+const http = require('http');
+const server = http.createServer(app);
+const socketIO =require('socket.io')(server);
+socketIO.on('connection', (ws)=> {
+    console.log("connected");
+    // socketIO.emit('abbas', 'message abbas')
+    // socketIO.emit('sherif', 'message Sherif')
+    // // ws.on('sherif', (message) =>{
+    // //     // console.log('received: %s c m', message);
+    // //     socketIO.emit('sherif', 'message Sherif')
+    // // });
+    // // ws.on('abbas', (message) =>{
+    // //     // console.log('received: %s c m', message);
+    // //     socketIO.emit('abbas', 'message abbas')
     // });
 });
 
+server.listen(port);
+//ends here.
+const Channels = require('./api/models/channelList');
+app.get('/createChannel',(req,res)=>{
+    // console.log(req.query.user)
+    let id = req.query.channelid;
+    Channels.findById(id)
+    .populate('userInformation')
+    .exec()
+    .then(chan=>{
+        let channel = {
+            channelName:chan.channelName,
+            channelDescription:chan.channelDescription,
+            channelPrivate : chan.channelPrivate,
+            createdAt:chan.createdAt
+        }
+        socketIO.emit(chan.userInformation._id, channel)
+        res.status(201).json(
+            channel
+        );
+    }).catch(err=> {
+        res.status(500).json({error:err});
+    });  
+    
+})
+
+const ChannelsMessage = require('./api/models/channelMessage');
+app.get('/messageChannel',(req,res)=>{
+    // console.log(req.query.user)
+    let id = req.query.messageid;
+    let channelid = req.query.channelid;
+    ChannelsMessage.findById(id)
+    .populate('userInformation')
+    .exec()
+    .then(chan=>{
+        let channel = {
+            messageContent:chan.messageContent,
+            postedBy:{
+                fullName:chan.userInformation.fullName,
+                profileImage:chan.userInformation.profileImage,
+            },
+            createdAt:chan.createdAt
+        }
+        socketIO.emit(channelid, channel)
+        res.status(201).json(
+            channel
+        );
+    }).catch(err=> {
+        res.status(500).json({error:err});
+    });    
+})
+
+const ChannelsUsers = require('./api/models/channelUsers');
+app.get('/addUserToChannel',(req,res)=>{
+    let channelid = req.query.channelid;
+    ChannelsUsers.findById(channelid)
+    .populate('userInformation')
+    .exec()
+    .then(chan=>{
+        let channel = {
+            messageContent:chan.messageContent,
+            postedBy:{
+                fullName:chan.userInformation.fullName,
+                profileImage:chan.userInformation.profileImage,
+            },
+            createdAt:chan.createdAt
+        }
+        socketIO.emit(channelid, channel)
+        res.status(201).json(
+            channel
+        );
+    }).catch(err=> {
+        res.status(500).json({error:err});
+    });    
+})
 
 const channelListRoutes = require('./api/route/channelList');
 app.use('/channels',channelListRoutes);
@@ -96,4 +212,7 @@ app.use((error, req,res,next)=>{
     });
 });
 
-module.exports = app;
+
+
+
+// module.exports = app;
