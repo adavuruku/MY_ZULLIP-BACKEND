@@ -77,7 +77,13 @@ exports.get_all_user_channel = (req,res,next)=>{
     const userId = req.userData.userId
     ChannelsUsers.find({userInformation:userId})
     .populate('userInformation')
-    .populate('channelInfo')
+    .populate({
+        path:'channelInfo',
+        populate: {
+            path: 'userInformation',
+            model: 'UserInformation'
+          } 
+    })
     .exec()
     .then(channel=>{
         if(channel.length > 0){
@@ -88,9 +94,11 @@ exports.get_all_user_channel = (req,res,next)=>{
                         channelId: chan.channelInfo._id,
                         channelName: chan.channelInfo.channelName,
                         createdAt: chan.channelInfo.createdAt,
-                        createdBy: chan.userInformation.fullName
+                        channelPrivate: chan.channelInfo.channelPrivate,
+                        channelDescription: chan.channelInfo.channelDescription,
+                        createdBy: chan.channelInfo.userInformation.fullName
                     }
-                })
+                }) 
             };
             res.status(200).json(response);
         }else{
