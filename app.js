@@ -112,6 +112,7 @@ app.get('/createChannel',(req,res)=>{
     .exec()
     .then(chan=>{
         let channel = {
+            channelid:chan._id,
             channelName:chan.channelName,
             channelDescription:chan.channelDescription,
             channelPrivate : chan.channelPrivate,
@@ -179,7 +180,20 @@ app.get('/addUserToChannel',(req,res)=>{
                     }
                 })
             };
-            socketIO.emit("channelid", response)
+            let addedUser = [];
+            channelUser.forEach(chanUser=>{
+                addedUser.push(chanUser.userInformation._id)
+            })
+            socketVal = {
+                createdBy:channelUser[0].userInformation.fullName,
+                channelid:channelUser[0].channelInfo._id,
+                channelName:channelUser[0].channelInfo.channelName,
+                channelDescription:channelUser[0].channelInfo.channelDescription,
+                createdAt:channelUser[0].channelInfo.createdAt,
+                channelId:channelUser[0].channelInfo._id,
+                addedUsers:addedUser
+            }
+            socketIO.emit("addedToChannel", socketVal)
             res.status(200).json(response);
         }else{
             res.status(202).json({message: 'No Users Yet'});

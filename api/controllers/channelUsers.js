@@ -16,7 +16,11 @@ exports.add_user_to_channel = async (req,res,next)=>{
                 });
                 chanUser.save()
                 .then(doc=>{
-                    
+                    // const addedUser = {
+                    //     channelId: channelInfo,
+                    //     userid:doc.userInformation
+                    // }
+                    // addedUser.push(addedUser);
                 }).catch(err=>{
                     
                 });

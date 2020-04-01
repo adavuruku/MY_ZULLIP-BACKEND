@@ -18,24 +18,31 @@
         const socket = io('http://127.0.0.1:3000');
         // const socket = io();
         var log = document.getElementById('log');
+        document.querySelector('button').onclick = ()=>{
+            var text = document.getElementById('text').value;
+            socket.emit('chat-message',text);
+        }
 
-        //listener user created a channel
+
+        //listener to send notification to the user dat creates the channel
+        // user created a channel
         socket.on('5e7b79e1a2ebf72008c1346e', data=>{
             console.log(JSON.stringify(data));
            let msg =   `#${data.channelName} You created this channel on ${data.createdAt}. This is the very begining of the #${data.channelName} channel. Description : ${data.channelDescription}`
             log.innerHTML += '<br>' + msg +'<br>'
         })
 
+
+
+        let g = ['sherif', 'abbas']
+
+        //user just get added to a channel
         socket.on('addedToChannel', data=>{
             console.log(data);
             log.innerHTML += data +'<br>'
         })
-
-        document.querySelector('button').onclick = ()=>{
-            var text = document.getElementById('text').value;
-            socket.emit('chat-message',text);
-        }
-        let g = ['sherif', 'abbas']
+        //create listener for all the existing channel user has
+        //been added to
         function loadAllUsersChannel(){
             g.forEach(el=>{
                 socket.on(el, data=>{
