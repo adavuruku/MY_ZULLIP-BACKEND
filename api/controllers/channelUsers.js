@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const ChannelsUsers = require('../models/channelUsers');
+const url = require('url')
 //add users to channel
 exports.add_user_to_channel = async (req,res,next)=>{
     const channelInfo = req.params.channelid
@@ -15,14 +16,9 @@ exports.add_user_to_channel = async (req,res,next)=>{
                 });
                 chanUser.save()
                 .then(doc=>{
-                    // res.status(201).json({
-                    //     message:'Added'
-                    // });
+                    
                 }).catch(err=>{
-                    // res.status(500).json({
-                    //     message: 'faill',
-                    //     Error: err
-                    // });
+                    
                 });
             }
         });
@@ -47,26 +43,26 @@ exports.list_all_channel_Users = (req,res,next)=>{
     .populate('channelInfo')
     .exec()
     .then(channelUser=>{
-        const response={
-            count: channelUser.length,
-            channelName:channelUser[0].channelInfo.channelName,
-            channelDescription:channelUser[0].channelInfo.channelDescription,
-            createdAt:channelUser[0].channelInfo.createdAt,
-            allChannelUsers: channelUser.map(channel=>{
-                return {
-                    userId:channel.userInformation._id,
-                    fullName:channel.userInformation.fullName,
-                    phone:channel.userInformation.phone,
-                    profileImage:channel.userInformation.profileImage,
-                    displayName:channel.userInformation.displayName,
-                    email:channel.userInformation.email
-                }
-            })
-        };
-        if(channelUser){
+        if(channelUser.length > 0){
+            const response={
+                count: channelUser.length,
+                channelName:channelUser[0].channelInfo.channelName,
+                channelDescription:channelUser[0].channelInfo.channelDescription,
+                createdAt:channelUser[0].channelInfo.createdAt,
+                allChannelUsers: channelUser.map(channel=>{
+                    return {
+                        userId:channel.userInformation._id,
+                        fullName:channel.userInformation.fullName,
+                        phone:channel.userInformation.phone,
+                        profileImage:channel.userInformation.profileImage,
+                        displayName:channel.userInformation.displayName,
+                        email:channel.userInformation.email
+                    }
+                })
+            };
             res.status(200).json(response);
         }else{
-            res.status(404).json({message: 'No Users Yet'});
+            res.status(202).json({message: 'No Users Yet'});
         }
     }).catch(err=> {
         res.status(500).json({error:err});

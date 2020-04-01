@@ -156,22 +156,34 @@ app.get('/messageChannel',(req,res)=>{
 const ChannelsUsers = require('./api/models/channelUsers');
 app.get('/addUserToChannel',(req,res)=>{
     let channelid = req.query.channelid;
-    ChannelsUsers.findById(channelid)
+    ChannelsUsers.find({channelInfo:channelid})
     .populate('userInformation')
+    .populate('channelInfo')
     .exec()
-    .then(chan=>{
-        let channel = {
-            messageContent:chan.messageContent,
-            postedBy:{
-                fullName:chan.userInformation.fullName,
-                profileImage:chan.userInformation.profileImage,
-            },
-            createdAt:chan.createdAt
+    .then(channelUser=>{
+        if(channelUser.length > 0){
+            const response={
+                count: channelUser.length,
+                channelid:channelUser[0].channelInfo._id,
+                channelName:channelUser[0].channelInfo.channelName,
+                channelDescription:channelUser[0].channelInfo.channelDescription,
+                createdAt:channelUser[0].channelInfo.createdAt,
+                allChannelUsers: channelUser.map(channel=>{
+                    return {
+                        userId:channel.userInformation._id,
+                        fullName:channel.userInformation.fullName,
+                        phone:channel.userInformation.phone,
+                        profileImage:channel.userInformation.profileImage,
+                        displayName:channel.userInformation.displayName,
+                        email:channel.userInformation.email
+                    }
+                })
+            };
+            socketIO.emit("channelid", response)
+            res.status(200).json(response);
+        }else{
+            res.status(202).json({message: 'No Users Yet'});
         }
-        socketIO.emit(channelid, channel)
-        res.status(201).json(
-            channel
-        );
     }).catch(err=> {
         res.status(500).json({error:err});
     });    
