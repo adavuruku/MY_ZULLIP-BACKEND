@@ -26,25 +26,43 @@
 
         //listener to send notification to the user dat creates the channel
         // user created a channel
-        socket.on('5e7b79e1a2ebf72008c1346e', data=>{
+        let userId = '5e7b79e1a2ebf72008c1346e'
+        socket.on(userId, data=>{
             console.log(JSON.stringify(data));
            let msg =   `#${data.channelName} You created this channel on ${data.createdAt}. This is the very begining of the #${data.channelName} channel. Description : ${data.channelDescription}`
             log.innerHTML += '<br>' + msg +'<br>'
         })
 
+//         "5e7b79e1a2ebf72008c1346e"
+// 1: "5e7ca6c55128d453306c128d"
+// 2: "5e7ca68e5128d453306c128c"
 
 
-        let g = ['sherif', 'abbas']
+        let existingChannel = ['5e846cb130625779bcd9f193', '5e843fe836c1beb16cda470a','5e843f5dab8e78ac045b3744']
 
         //user just get added to a channel
         socket.on('addedToChannel', data=>{
-            console.log(data);
-            log.innerHTML += data +'<br>'
+            if(data.addedUsers.indexOf(userId) !==-1){
+                console.log("he dey");
+                if(existingChannel.indexOf(data.channelid) !==-1){
+                    console.log("channel dey");
+                }
+            }
+            var  difference = data.addedUsers.filter(x=> existingChannel.indexOf(x) === -1);
+            existingChannel.forEach(el=>{
+                socket.on(el, data=>{
+                    console.log(data);
+                    log.innerHTML += data +'<br>'
+                })
+                // console.log(el);
+            })
+            console.log(difference);
+            log.innerHTML += data.addedUsers +'<br>'
         })
         //create listener for all the existing channel user has
         //been added to
         function loadAllUsersChannel(){
-            g.forEach(el=>{
+            existingChannel.forEach(el=>{
                 socket.on(el, data=>{
                     console.log(data);
                     log.innerHTML += data +'<br>'

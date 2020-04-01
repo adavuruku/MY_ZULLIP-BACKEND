@@ -35,7 +35,6 @@ exports.users_user_login = (req,res,next)=>{
     Users.find({email:req.body.email})
     .exec()
     .then(user=>{
-        console.log(req.body.email);
         if(user.length < 1){
             return res.status(404).json({
                 message: 'Authentication failed'
