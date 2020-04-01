@@ -38,26 +38,22 @@
 // 2: "5e7ca68e5128d453306c128c"
 
 
-        let existingChannel = ['5e846cb130625779bcd9f193', '5e843fe836c1beb16cda470a','5e843f5dab8e78ac045b3744']
+        let existingChannel = ['5e843fe836c1beb16cda470a','5e843f5dab8e78ac045b3744']
 
         //user just get added to a channel
         socket.on('addedToChannel', data=>{
+            console.log(existingChannel,'prev')
             if(data.addedUsers.indexOf(userId) !==-1){
                 console.log("he dey");
-                if(existingChannel.indexOf(data.channelid) !==-1){
-                    console.log("channel dey");
+                if(existingChannel.indexOf(data.channelid) === -1){
+                    socket.on(data.channelid, data=>{
+                        console.log(data);
+                        log.innerHTML += data +'<br>'
+                    })
+                    existingChannel.push(data.channelid);
                 }
             }
-            var  difference = data.addedUsers.filter(x=> existingChannel.indexOf(x) === -1);
-            existingChannel.forEach(el=>{
-                socket.on(el, data=>{
-                    console.log(data);
-                    log.innerHTML += data +'<br>'
-                })
-                // console.log(el);
-            })
-            console.log(difference);
-            log.innerHTML += data.addedUsers +'<br>'
+            console.log(existingChannel,'now')
         })
         //create listener for all the existing channel user has
         //been added to
