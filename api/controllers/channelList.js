@@ -188,7 +188,7 @@ exports.update_channel = (req,res,next)=>{
     });
 }
 
-//retrieve a channel
+//delete a channel
 exports.delete_channel = (req,res,next)=>{
     const id = req.params.channelid
     Channels.remove({_id:id,userInformation:req.userData.userId})

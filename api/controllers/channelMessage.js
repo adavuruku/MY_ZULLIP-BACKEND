@@ -62,7 +62,73 @@ exports.users_view_channel_message = (req,res,next)=>{
         console.log(err)
         res.status(500).json({error:err});
     });
-}     
+}
+// const asyncRec = require('async')     
+// const ChannelMessageConversation = require('../models/channelMessageConversation');
+// exports.users_view_channel_message = async (req,res,next)=>{
+//     const channelid = req.params.channelid
+//     console.log(channelid)
+//     await ChannelsMessage.find({channelInfo:channelid}).sort('-createdAt')
+//     .populate('userInformation','fullName')
+//     .populate('channelInfo')
+//     .exec()
+//     .then(message=>{
+//         if(message.length > 0){
+//             response={
+//                 count: message.length,
+//                 channelId: message[0].channelInfo._id,
+//                 channelName: message[0].channelInfo.channelName,
+//                 allMessage:  ()=>  {(message.map(channel=>{
+//                     if (channel.channelMessageConversation == true){
+//                         ChannelMessageConversation.find({channelInfo:channel._id}).sort('-createdAt')
+//                         .populate('userInformation')
+//                         .exec()
+//                         .then(conversation=>{
+//                             const responseTwo={};
+//                             if (conversation.length>0){
+//                                 responseTwo['conversation']=conversation
+//                             }
+//                             return {
+//                                 messageId: channel._id,
+//                                 messageContent: channel.messageContent,
+//                                 isThread: channel.channelMessageConversation,
+//                                 channelMessageReaction: channel.channelMessageReaction,
+//                                 postedBy: channel.userInformation.fullName,
+//                                 createdAt:channel.createdAt,
+//                                 conversationMessage :responseTwo
+                                
+//                             }
+//                         })
+//                     }else{
+//                         return {
+//                             messageId: channel._id,
+//                             messageContent: channel.messageContent,
+//                             isThread: channel.channelMessageConversation,
+//                             channelMessageReaction: channel.channelMessageReaction,
+//                             postedBy: channel.userInformation.fullName,
+//                             createdAt:channel.createdAt
+//                         }
+//                     }
+//                 }))}
+//             }
+//             res.status(200).json(response);
+//         }else{
+//             res.status(200).json({message: 'No Message'});
+//         }
+//     }).catch(err=> {
+//         console.log(err)
+//         res.status(500).json({error:err});
+//     });
+}   
+
+// Promise.all([
+//     User.find({ _id: req.body.userId }),
+//     User.find({ username: decodedUser.username})
+//   ]).then( ([ user, member ]) => {
+//     console.log( util.format( "user=%O member=%O", user, member ) );
+//   });
+
+
 
 
 // add reactions to channel message
@@ -129,4 +195,19 @@ exports.channel_message_to_conversation = (req,res,next)=>{
             user:result
         });
     })
+}
+
+
+//delete a message
+exports.delete_message = (req,res,next)=>{
+    const id = req.params.messageid
+    ChannelsMessage.remove({_id:id,userInformation:req.userData.userId})
+    .exec()
+    .then(channel=>{
+        res.status(200).json({
+            message:"removed"
+        });
+    }).catch(err=> {
+        res.status(500).json({error:err});
+    });
 }

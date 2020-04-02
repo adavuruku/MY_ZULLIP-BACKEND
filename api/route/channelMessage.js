@@ -9,6 +9,7 @@ router.post('/create',checkAuth, channelMessageControllers.users_add_message);
 router.get('/:channelid',checkAuth, channelMessageControllers.users_view_channel_message);
 router.patch('/:messageid',checkAuth, channelMessageControllers.channel_message_to_conversation);
 router.patch('/react/:messageid',checkAuth, channelMessageControllers.channel_add_reaction_to_channel_message);
+router.delete('/:messageid',checkAuth, channelMessageControllers.delete_message);
 // router.get('/:channelid',checkAuth,channelListControllers.find_channel)
 // router.get('/users/:userid',checkAuth,channelListControllers.find_all_user_channel)
 // router.get('/',checkAuth, channelListControllers.list_all_channel);

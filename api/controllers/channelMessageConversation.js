@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
-const channelMessageConversation = require('../models/channelMessageConversation');
+const ChannelMessageConversation = require('../models/channelMessageConversation');
 
 //create channel
 exports.add_message = (req,res,next)=>{
-    const chan = new channelMessageConversation({
+    const chan = new ChannelMessageConversation({
         _id : mongoose.Types.ObjectId(),
         userInformation :req.userData.userId,
         message : req.body.messageId,
@@ -27,7 +27,7 @@ exports.add_message = (req,res,next)=>{
 exports.channel_add_reaction_to_conversation_message = (req,res,next)=>{
     const messageid = req.params.conversationid
     console.log(messageid);
-    channelMessageConversation.findOneAndUpdate({_id:messageid},
+    ChannelMessageConversation.findOneAndUpdate({_id:messageid},
         {
             $addToSet:{
                 conversationMessageReaction:{
