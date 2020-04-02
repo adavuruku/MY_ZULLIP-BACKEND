@@ -34,7 +34,7 @@ exports.users_view_channel_message = (req,res,next)=>{
     const channelid = req.params.channelid
     console.log(channelid)
     ChannelsMessage.find({channelInfo:channelid}).sort('-createdAt')
-    .populate('userInformation','fullName')
+    .populate('userInformation')
     .populate('channelInfo')
     .exec()
     .then(message=>{
@@ -48,9 +48,12 @@ exports.users_view_channel_message = (req,res,next)=>{
                         messageId: channel._id,
                         messageContent: channel.messageContent,
                         isThread: channel.channelMessageConversation,
-                        channelMessageReaction: channel.channelMessageReaction,
-                        postedBy: channel.userInformation.fullName,
-                        createdAt:channel.createdAt
+                        postedBy: {
+                            fullName:channel.userInformation.fullName,
+                            profileImage:channel.userInformation.profileImage
+                        },
+                        createdAt:channel.createdAt,
+                        channelMessageReaction: channel.channelMessageReaction
                     }
                 })
             };

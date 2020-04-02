@@ -28,7 +28,7 @@ exports.users_view_conversation_message = (req,res,next)=>{
     const messageid = req.params.messageid
     console.log(messageid)
     ChannelMessageConversation.find({message:messageid}).sort('-createdAt')
-    .populate('userInformation','fullName')
+    .populate('userInformation')
     .populate({
         path:'message',
         populate: {
@@ -42,16 +42,18 @@ exports.users_view_conversation_message = (req,res,next)=>{
             const response={
                 count: messageConversation.length,
                 messgeId: messageConversation[0].message._id,
-                channelName: messageConversation[0].message.messageContent,
+                messageContent: messageConversation[0].message.messageContent,
                 postedBy: messageConversation[0].message.userInformation.fullName,
                 profileImage: messageConversation[0].message.userInformation.profileImage,
                 allMessage: messageConversation.map(channel=>{
                     return {
                         conversationId: channel._id,
                         conversationMessage: channel.conversationMessage,
-                        ConversationMessageReaction: channel.conversationMessageReaction,
-                        postedBy: channel.userInformation.fullName,
-                        createdAt:channel.createdAt
+                        postedBy:{
+                            fullname:channel.userInformation.fullName,
+                            profileImage:channel.userInformation.profileImage
+                        }, 
+                        createdAt:channel.createdAt,ConversationMessageReaction: channel.conversationMessageReaction
                     }
                 })
             };
@@ -90,4 +92,18 @@ exports.channel_add_reaction_to_conversation_message = (req,res,next)=>{
             });
         }
     })
+}
+
+//delete a message
+exports.delete_conversation = (req,res,next)=>{
+    const id = req.params.conversationid
+    ChannelMessageConversation.remove({_id:id,userInformation:req.userData.userId})
+    .exec()
+    .then(channel=>{
+        res.status(200).json({
+            message:"removed"
+        });
+    }).catch(err=> {
+        res.status(500).json({error:err});
+    });
 }
