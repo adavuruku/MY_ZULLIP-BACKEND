@@ -119,7 +119,7 @@ exports.users_view_channel_message = (req,res,next)=>{
 //         console.log(err)
 //         res.status(500).json({error:err});
 //     });
-}   
+// }   
 
 // Promise.all([
 //     User.find({ _id: req.body.userId }),
